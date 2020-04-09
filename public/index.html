@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <link href="./css/style.css" rel="stylesheet">
+  <style>
+    html,
+    body,
+    .map {
+      height: 100%;
+      width: 100%;
+    }
+    #tools {
+      padding: 10px;
+    }
+    #color {
+      width: 64px;
+      height: 64px;
+      border: none;
+    }
+  </style>
+  <title>OpenLayers example</title>
+</head>
+
+<body>
+  <form id="tools">
+    <label for="point" class="btn point"></label>
+    <label for="line" class="btn line"></label>
+    <label for="polygon" class="btn polygon"></label>
+    <input type="radio" name="tool" id="point" value="Point" checked>
+    <input type="radio" name="tool" id="line" value="LineString">
+    <input type="radio" name="tool" id="polygon" value="Polygon">
+    <input type="color" id="color">
+  </form>
+
+  <div id="map" class="map"></div>
+  <script src="./index.js"></script>
+</body>
+
+</html>
