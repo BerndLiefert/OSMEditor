@@ -1,6 +1,10 @@
 {
     "dependencies": {
-        "ol": "^6.3.0"
+        "@types/ol": "^6.3.1",
+        "js": "^0.1.0",
+        "lib": "^4.1.2",
+        "ol": "^6.3.0",
+        "typescript": "^3.8.3"
     },
     "scripts": {
         "start": "parcel ./public/index.html",

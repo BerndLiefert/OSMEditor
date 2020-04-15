@@ -1,0 +1,36 @@
+* {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.btn {
+    background:url("/icons.6f241e97.png");
+    width: 64px;
+    height: 64px;
+    border: none;
+    display: inline-block;
+    opacity: 0.3;
+}
+
+.active {
+    opacity: .4;
+}
+
+.point {
+    background-position: 0 0;
+}
+
+.line {
+    background-position: -64px 0;
+}
+
+.polygon {
+    background-position: -128px 0;
+}
+
+input[name="tool"] {
+    display: none;
+}
+
+/*# sourceMappingURL=/style.78032849.css.map */
