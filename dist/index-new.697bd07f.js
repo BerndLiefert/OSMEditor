@@ -68792,7 +68792,77 @@ var Loader = /*#__PURE__*/function () {
 }();
 
 exports.default = Loader;
-},{"ol/layer/Vector":"../node_modules/ol/layer/Vector.js","ol/style":"../node_modules/ol/style.js","ol/source/Vector":"../node_modules/ol/source/Vector.js","ol/format/GeoJSON":"../node_modules/ol/format/GeoJSON.js"}],"js/index-new.js":[function(require,module,exports) {
+},{"ol/layer/Vector":"../node_modules/ol/layer/Vector.js","ol/style":"../node_modules/ol/style.js","ol/source/Vector":"../node_modules/ol/source/Vector.js","ol/format/GeoJSON":"../node_modules/ol/format/GeoJSON.js"}],"js/lib/styles.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+require("ol/ol.css");
+
+var _Point = _interopRequireDefault(require("ol/geom/Point"));
+
+var _style = require("ol/style");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var Styles = /*#__PURE__*/function () {
+  function Styles(color) {
+    _classCallCheck(this, Styles);
+
+    this.color = color;
+  }
+
+  _createClass(Styles, [{
+    key: "style",
+    value: function style(feature) {
+      var geometry = feature.getGeometry();
+      var styles = [// linestring
+      new _style.Style({
+        stroke: new _style.Stroke({
+          color: this.color,
+          width: 2
+        })
+      })];
+
+      if (geometry.getType() == "LineString") {
+        geometry.forEachSegment(function (start, end) {
+          var dx = end[0] - start[0];
+          var dy = end[1] - start[1];
+          var rotation = Math.atan2(dy, dx); // arrows
+
+          styles.push(new _style.Style({
+            geometry: new _Point.default(end),
+            image: new _style.Icon({
+              src: './assets/arrow.png',
+              size: [256, 256],
+              scale: 0.25,
+              offset: [0, 0],
+              anchor: [0.75, 0.5],
+              rotateWithView: true,
+              rotation: -rotation
+            })
+          }));
+        });
+      }
+
+      return styles;
+    }
+  }]);
+
+  return Styles;
+}();
+
+exports.default = Styles;
+},{"ol/ol.css":"../node_modules/ol/ol.css","ol/geom/Point":"../node_modules/ol/geom/Point.js","ol/style":"../node_modules/ol/style.js"}],"js/index-new.js":[function(require,module,exports) {
 "use strict";
 
 require("ol/ol.css");
@@ -68807,134 +68877,164 @@ var _source = require("ol/source");
 
 var _loader = _interopRequireDefault(require("./lib/loader.js"));
 
+var _styles = _interopRequireDefault(require("./lib/styles.js"));
+
+var _Vector = _interopRequireDefault(require("ol/layer/Vector"));
+
+var _style = require("ol/style");
+
+var _interaction = require("ol/interaction");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _createForOfIteratorHelper(o) { if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (o = _unsupportedIterableToArray(o))) { var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var it, normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(n); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var EditorPlugin = function EditorPlugin() {
-  _classCallCheck(this, EditorPlugin);
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-  var raster = new _layer.Tile({
-    source: new _source.OSM()
-  });
-  var map = new _Map.default({
-    layers: [raster],
-    target: 'map',
-    view: new _View.default({
-      center: [-11000000, 4600000],
-      zoom: 4
-    })
-  });
-  var loader = new _loader.default('./berlin_bezirke.geojson');
-  var berlin = loader.getVectorLayer();
-  map.addLayer(berlin);
-};
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var color = '#FF11A3';
+
+var EditorPlugin = /*#__PURE__*/function () {
+  function EditorPlugin() {
+    var _this = this;
+
+    _classCallCheck(this, EditorPlugin);
+
+    var raster = new _layer.Tile({
+      source: new _source.OSM()
+    });
+    this.map = new _Map.default({
+      layers: [raster],
+      target: 'map',
+      view: new _View.default({
+        center: [-11000000, 4600000],
+        zoom: 4
+      })
+    });
+    var loader = new _loader.default('./berlin_bezirke.geojson');
+    var berlin = loader.getVectorLayer();
+    this.map.addLayer(berlin);
+    var styles = new _styles.default(color);
+    var styleFunction = styles.style.bind(styles);
+    this.source = new _source.Vector();
+    var arrow = new _Vector.default({
+      source: this.source,
+      style: styleFunction
+    });
+    var vector = new _Vector.default({
+      source: this.source,
+      style: new _style.Style({
+        fill: new _style.Fill({
+          color: 'rgba(255, 255, 255, 0.2)'
+        }),
+        stroke: new _style.Stroke({
+          color: color,
+          width: 2
+        }),
+        image: new _style.Icon({
+          src: './assets/marker.png',
+          size: [128, 128],
+          offset: [0, 0],
+          opacity: 1,
+          scale: 0.25
+        })
+      })
+    });
+    this.map.addLayer(arrow);
+    this.map.addLayer(vector);
+    this.modify = new _interaction.Modify({
+      source: this.source
+    });
+    this.map.addInteraction(this.modify);
+    var buttons = document.getElementsByName('tool');
+
+    var _iterator = _createForOfIteratorHelper(buttons),
+        _step;
+
+    try {
+      for (_iterator.s(); !(_step = _iterator.n()).done;) {
+        var button = _step.value;
+        button.addEventListener('click', function (e) {
+          _this.map.removeInteraction(_this.draw);
+
+          _this.map.removeInteraction(_this.snap);
+
+          _this.addInteractions();
+        });
+      }
+    } catch (err) {
+      _iterator.e(err);
+    } finally {
+      _iterator.f();
+    }
+
+    this.addInteractions();
+    var labels = document.querySelectorAll('label');
+
+    var _iterator2 = _createForOfIteratorHelper(labels),
+        _step2;
+
+    try {
+      for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+        var label = _step2.value;
+        label.addEventListener('click', function () {
+          plugin.unstyle();
+          this.style.setProperty('opacity', '1');
+        });
+      }
+    } catch (err) {
+      _iterator2.e(err);
+    } finally {
+      _iterator2.f();
+    }
+  }
+
+  _createClass(EditorPlugin, [{
+    key: "addInteractions",
+    value: function addInteractions() {
+      this.draw = new _interaction.Draw({
+        source: this.source,
+        type: document.querySelector('input[name="tool"]:checked').value
+      });
+      this.map.addInteraction(this.draw);
+      this.snap = new _interaction.Snap({
+        source: this.source
+      });
+      this.map.addInteraction(this.snap);
+    }
+  }, {
+    key: "unstyle",
+    value: function unstyle() {
+      var labels = document.querySelectorAll('label');
+
+      var _iterator3 = _createForOfIteratorHelper(labels),
+          _step3;
+
+      try {
+        for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+          var label = _step3.value;
+          label.style.setProperty('opacity', '.3');
+        }
+      } catch (err) {
+        _iterator3.e(err);
+      } finally {
+        _iterator3.f();
+      }
+    }
+  }]);
+
+  return EditorPlugin;
+}();
 
 var plugin = new EditorPlugin();
-/*
-
-
-var styles = new Styles(color);
-var styleFunction = styles.style.bind(styles);
-
-var source = new VectorSource();
-
-var arrow = new VectorLayer({
-  source: source,
-  style: styleFunction
-});
-
-var vector = new VectorLayer({
-  source: source,
-  style: new Style({
-    fill: new Fill({
-      color: 'rgba(255, 255, 255, 0.2)'
-    }),
-    stroke: new Stroke({
-      color: color,
-      width: 2
-    }),
-    image: new Icon({
-      src: './assets/marker.png',
-      size: [128, 128],
-      offset: [0, 0],
-      opacity: 1,
-      scale: 0.25
-    })
-  })
-});
-
-let loader = new Loader('./berlin_bezirke.geojson');
-let berlin = loader.getVectorLayer();
-
-
-
-
-
-
-
-
-
-
-
-
-
-let editor = new Editor(map);
-
-
-
-
-
-
-var modify = new Modify({ source: source });
-editor.addInteraction(modify);
-
-
-var draw, snap, select; // global so we can remove them later
-
-function addInteractions() {
-  draw = new Draw({
-    source: source,
-    type: document.querySelector('input[name="tool"]:checked').value
-  });
-  map.addInteraction(draw);
-  snap = new Snap({ source: source });
-  map.addInteraction(snap);
-}
-
-
-let buttons = document.getElementsByName('tool');
-
-for (let button of buttons) {
-  button.addEventListener('click', function (e) {
-    map.removeInteraction(draw);
-    map.removeInteraction(snap);
-    addInteractions();
-  })
-}
-
-addInteractions();
-
-let labels = document.querySelectorAll('label');
-
-for (let label of labels) {
-  label.addEventListener('click', function () {
-    unstyle();
-    this.style.setProperty('opacity', '1');
-  });
-}
-
-function unstyle() {
-
-  let labels = document.querySelectorAll('label');
-
-  for (let label of labels) {
-    label.style.setProperty('opacity', '.3');
-  }
-}
-
-*/
-},{"ol/ol.css":"../node_modules/ol/ol.css","ol/Map":"../node_modules/ol/Map.js","ol/View":"../node_modules/ol/View.js","ol/layer":"../node_modules/ol/layer.js","ol/source":"../node_modules/ol/source.js","./lib/loader.js":"js/lib/loader.js"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"ol/ol.css":"../node_modules/ol/ol.css","ol/Map":"../node_modules/ol/Map.js","ol/View":"../node_modules/ol/View.js","ol/layer":"../node_modules/ol/layer.js","ol/source":"../node_modules/ol/source.js","./lib/loader.js":"js/lib/loader.js","./lib/styles.js":"js/lib/styles.js","ol/layer/Vector":"../node_modules/ol/layer/Vector.js","ol/style":"../node_modules/ol/style.js","ol/interaction":"../node_modules/ol/interaction.js"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -68962,7 +69062,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63170" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50914" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
