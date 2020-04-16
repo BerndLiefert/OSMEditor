@@ -68949,8 +68949,12 @@ var EditorPlugin = /*#__PURE__*/function () {
     });
     this.map.addLayer(arrow);
     this.map.addLayer(vector);
+    var select = new _interaction.Select({
+      wrapX: false
+    });
     this.modify = new _interaction.Modify({
-      source: this.source
+      source: this.source,
+      features: select.getFeatures()
     });
     this.map.addInteraction(this.modify);
     var buttons = document.getElementsByName('tool');
@@ -69062,7 +69066,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51157" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50159" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

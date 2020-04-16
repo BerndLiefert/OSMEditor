@@ -7,7 +7,7 @@ import Loader from './lib/loader.js';
 import Styles from './lib/styles.js';
 import VectorLayer from 'ol/layer/Vector';
 import { Style, Fill, Stroke, Icon } from 'ol/style';
-import { Modify, Draw, Snap } from 'ol/interaction';
+import { Modify, Draw, Snap, Select } from 'ol/interaction';
 const color = '#FF11A3';
 class EditorPlugin {
     constructor() {
@@ -53,7 +53,13 @@ class EditorPlugin {
         });
         this.map.addLayer(arrow);
         this.map.addLayer(vector);
-        this.modify = new Modify({ source: this.source });
+        let select = new Select({
+            wrapX: false
+        });
+        this.modify = new Modify({
+            source: this.source,
+            features: select.getFeatures()
+        });
         this.map.addInteraction(this.modify);
         let buttons = document.getElementsByName('tool');
         for (let button of buttons) {

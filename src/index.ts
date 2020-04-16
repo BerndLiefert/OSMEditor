@@ -67,7 +67,13 @@ class EditorPlugin {
     this.map.addLayer(arrow);
     this.map.addLayer(vector);
 
-    this.modify = new Modify({ source: this.source });
+    let select = new Select({
+      wrapX: false
+    });
+    this.modify = new Modify({
+      source: this.source,
+      features: select.getFeatures()
+    });
     this.map.addInteraction(this.modify);
 
     let buttons = document.getElementsByName('tool');
@@ -85,7 +91,7 @@ class EditorPlugin {
     let labels = document.querySelectorAll('label');
 
     for (let label of labels) {
-      label.addEventListener('click', function() {
+      label.addEventListener('click', function () {
         plugin.unstyle();
         this.style.setProperty('opacity', '1');
       });
