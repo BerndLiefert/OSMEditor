@@ -8,8 +8,9 @@ import Styles from './lib/styles.js';
 import VectorLayer from 'ol/layer/Vector';
 import { Style, Fill, Stroke, Icon } from 'ol/style';
 import { Modify, Draw, Snap, Select } from 'ol/interaction';
+import { Controls, NAME } from './lib/controls.js';
 const color = '#FF11A3';
-class EditorPlugin {
+export default class Plugin {
     constructor() {
         let raster = new TileLayer({
             source: new OSM()
@@ -61,22 +62,32 @@ class EditorPlugin {
             features: select.getFeatures()
         });
         this.map.addInteraction(this.modify);
-        let buttons = document.getElementsByName('tool');
-        for (let button of buttons) {
-            button.addEventListener('click', (e) => {
+        let buttons = document.getElementsByName(NAME);
+        /*
+            for (let button of buttons) {
+              button.addEventListener('click', (e) => {
                 this.map.removeInteraction(this.draw);
                 this.map.removeInteraction(this.snap);
                 this.addInteractions();
-            });
-        }
+              })
+            }
+        */
         this.addInteractions();
-        let labels = document.querySelectorAll('label');
-        for (let label of labels) {
-            label.addEventListener('click', function () {
+        let controls = new Controls(this, document.getElementById('tools'));
+        controls.add('point', 'point', 'Point');
+        controls.add('line', 'line', 'LineString');
+        controls.add('polygon', 'polygon', 'Polygon');
+        controls.render();
+        /*
+            let labels = document.querySelectorAll('label');
+        
+            for (let label of labels) {
+              label.addEventListener('click', function () {
                 plugin.unstyle();
                 this.style.setProperty('opacity', '1');
-            });
-        }
+              });
+            }
+        */
     }
     addInteractions() {
         this.draw = new Draw({
@@ -87,6 +98,11 @@ class EditorPlugin {
         this.snap = new Snap({ source: this.source });
         this.map.addInteraction(this.snap);
     }
+    removeInteractions() {
+        this.map.removeInteraction(this.draw);
+        this.map.removeInteraction(this.snap);
+        this.map.removeInteraction(this.modify);
+    }
     unstyle() {
         let labels = document.querySelectorAll('label');
         for (let label of labels) {
@@ -94,4 +110,4 @@ class EditorPlugin {
         }
     }
 }
-let plugin = new EditorPlugin();
+let plugin = new Plugin();

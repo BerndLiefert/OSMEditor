@@ -8,9 +8,11 @@ import Styles from './lib/styles.js';
 import VectorLayer from 'ol/layer/Vector';
 import { Style, Fill, Stroke, Icon } from 'ol/style';
 import { Modify, Draw, Snap, Select } from 'ol/interaction';
+import { Controls, NAME } from './lib/controls.js';
+import GeometryType from 'ol/geom/GeometryType';
 
 const color = '#FF11A3';
-class EditorPlugin {
+export default class Plugin {
   protected draw: Draw;
   protected snap: Snap;
   protected modify: Modify;
@@ -76,8 +78,8 @@ class EditorPlugin {
     });
     this.map.addInteraction(this.modify);
 
-    let buttons = document.getElementsByName('tool');
-
+    let buttons = document.getElementsByName(NAME);
+/*
     for (let button of buttons) {
       button.addEventListener('click', (e) => {
         this.map.removeInteraction(this.draw);
@@ -85,9 +87,20 @@ class EditorPlugin {
         this.addInteractions();
       })
     }
-
+*/
     this.addInteractions();
+    let controls = new Controls(this, document.getElementById('tools'));
+    controls.add('point', 'point', 'Point');
+    controls.add('line', 'line', 'LineString');
+    controls.add('polygon', 'polygon', 'Polygon');
+    controls.render();
 
+
+
+
+
+
+/*
     let labels = document.querySelectorAll('label');
 
     for (let label of labels) {
@@ -96,16 +109,23 @@ class EditorPlugin {
         this.style.setProperty('opacity', '1');
       });
     }
+*/
   }
 
   addInteractions() {
     this.draw = new Draw({
       source: this.source,
-      type: document.querySelector('input[name="tool"]:checked').value
+      type: (<GeometryType>(<HTMLInputElement>document.querySelector('input[name="tool"]:checked')).value)
     });
     this.map.addInteraction(this.draw);
     this.snap = new Snap({ source: this.source });
     this.map.addInteraction(this.snap);
+  }
+
+  removeInteractions() {
+    this.map.removeInteraction(this.draw);
+    this.map.removeInteraction(this.snap);
+    this.map.removeInteraction(this.modify);
   }
 
   unstyle() {
@@ -117,4 +137,4 @@ class EditorPlugin {
   }
 
 }
-let plugin = new EditorPlugin();
+let plugin = new Plugin();
